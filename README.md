@@ -1,14 +1,27 @@
-# Crowsi Network Observer
+# crowsi-network-observer
 
-`crowsi-network-observer` is the read-only observation boundary for Crowsi.
-It exposes a small Rust probe interface and a closed JSON contract that a Nuxt
-client can consume without depending on this repository's source.
+Read network-state metadata and produce a bounded observation for review.
 
-The bundled system probe reads Linux `/proc/net/dev` as an unprivileged user.
-The production probe has no configurable path and rejects non-regular sources.
-It reports only the presence of network interfaces. It does not emit byte
-counters, addresses, packet bodies, environment variables, or credentials.
-The deterministic sample probe performs no I/O.
+## What you can do
+
+- Inspect configured observation inputs.
+- Return a structured network-state snapshot.
+
+## Current scope
+
+Observation is read-only. The output does not authorize network changes.
+
+Package distribution is not activated by this documentation. Use the checked-in source and the declared dependency versions; published availability must be verified separately.
+
+## Getting started
+
+Install Rust 1.97 or newer and make the declared dependencies available. Use the configured private registry when a dependency is not distributed publicly. Run from this repository:
+
+```sh
+cargo test --locked
+```
+
+## Examples and interface details
 
 ## Commands
 
@@ -23,18 +36,17 @@ cargo test
 interface metadata and emits `crowsi://network/observations/v1`. Both set
 `external_actions` to `false`.
 
-## Embedding a probe
-
-Implement `NetworkProbe` and create records with
-`NetworkObservationV1::try_new(NetworkObservationInputV1)`. Output fields are
-private so invalid records cannot later be mutated and serialized. Use `collect`
-to validate cross-record uniqueness and collection limits before sorting and
-calculating the declared count. A probe is responsible for observation only;
-remediation belongs to a separately authorized controller.
-
 ## Contract policy
 
 - Consumers select behavior from `schema`, never from repository layout.
 - Unknown JSON fields are rejected when the contract is deserialized.
 - Nullable latency and loss mean the probe did not measure those properties.
 - New incompatible fields require a new contract URI.
+
+## Documentation and source
+
+[Interface reference](docs/interface-reference.md)
+
+[Usage guide](docs/getting-started.md)
+
+[Examples](examples) · [Schemas](schemas) · [Implementation and public interfaces](src) · [Verification cases](tests) · [Contributing](CONTRIBUTING.md) · [Security reporting](SECURITY.md) · [License](LICENSE) · [Attribution notices](NOTICE)
